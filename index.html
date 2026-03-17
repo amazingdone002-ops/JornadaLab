@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Jornada Laboral</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F5F4F0;--surface:#fff;--border:#E8E7E3;--border2:#D5D3CC;
+  --t1:#1A1918;--t2:#706E68;--t3:#A09D96;
+  --accent:#B45309;--accent-bg:#FEF3C7;
+  --green:#059669;--green-bg:#D1FAE5;
+  --red:#DC2626;--red-bg:#FEE2E2;
+}
+html,body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t1);min-height:100dvh;-webkit-font-smoothing:antialiased}
+input,button,select{font-family:'Outfit',sans-serif}
+button{cursor:pointer}
+
+/* layout */
+.page{min-height:100dvh;background:var(--bg)}
+header{background:var(--t1);color:#fff;height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.header-title{font-weight:700;font-size:17px;letter-spacing:-.02em}
+.header-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:-1px}
+.summary-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 16px}
+.summary-inner{max-width:600px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.summary-label{font-size:12px;color:var(--t3);font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.summary-amount{font-size:26px;font-weight:700;color:var(--t1);letter-spacing:-.03em;margin-top:2px}
+main{max-width:600px;margin:0 auto;padding:16px 12px 40px}
+
+/* login */
+.login-wrap{min-height:100dvh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px 16px}
+.login-box{width:100%;max-width:380px}
+.login-logo{width:52px;height:52px;background:var(--t1);border-radius:16px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center}
+.login-card{background:#fff;border-radius:20px;border:1.5px solid var(--border);padding:28px 24px 24px}
+.login-title{font-size:16px;font-weight:600;color:var(--t1);margin-bottom:20px}
+
+/* form */
+.field{display:flex;flex-direction:column;gap:5px}
+.label{font-size:13px;font-weight:600;color:var(--t2)}
+.input{border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-size:15px;color:var(--t1);background:var(--bg);outline:none;width:100%;transition:border-color .15s}
+.input:focus{border-color:#F59E0B;background:#fff}
+.input-wrap{position:relative}
+.input-wrap .input{padding-right:44px}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--t3);display:flex;align-items:center;padding:0}
+.hint{font-size:11px;color:var(--t3);margin-top:4px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;font-weight:600;font-size:14px;border-radius:10px;padding:11px 18px;transition:all .15s}
+.btn-primary{background:var(--t1);color:#fff}
+.btn-primary:active{transform:scale(.97)}
+.btn-ghost{background:var(--bg);color:var(--t2);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2)}
+.btn-danger{background:var(--red-bg);color:var(--red)}
+.btn-full{width:100%;padding:13px}
+
+/* error / preview */
+.error-msg{background:var(--red-bg);color:var(--red);font-size:13px;padding:9px 12px;border-radius:8px;font-weight:500}
+.preview-msg{background:var(--accent-bg);color:var(--accent);font-size:13px;padding:10px 14px;border-radius:10px;font-weight:500}
+
+/* card */
+.card{background:#fff;border-radius:16px;border:1.5px solid var(--border);margin-bottom:10px;overflow:hidden;transition:border-color .2s}
+.card.open{border-color:var(--border2)}
+.card-header{width:100%;display:flex;align-items:center;padding:14px 16px;background:none;border:none;gap:12px;text-align:left}
+.avatar{width:42px;height:42px;border-radius:12px;background:var(--accent-bg);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;flex-shrink:0}
+.card-name{font-weight:600;font-size:15px;color:var(--t1);line-height:1.2}
+.card-sub{font-size:12px;color:var(--t3);margin-top:2px}
+.card-right{text-align:right;flex-shrink:0}
+.card-amount{font-weight:700;font-size:16px;color:var(--t1)}
+.card-hours{font-size:12px;color:var(--t3);margin-top:2px}
+.chevron{flex-shrink:0;color:var(--t3);transition:transform .3s ease}
+.chevron.open{transform:rotate(180deg)}
+
+/* accordion */
+.accordion-body{overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.accordion-body.open{max-height:2000px}
+.accordion-inner{border-top:1px solid var(--border)}
+
+/* table */
+.col-headers{display:grid;padding:8px 16px;gap:8px;background:var(--bg);border-bottom:1px solid var(--border)}
+.col-h{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+.entry-row{display:grid;padding:11px 16px;gap:8px;align-items:center}
+.entry-row:not(:last-child){border-bottom:1px solid var(--border)}
+.entry-date{font-size:13px;color:var(--t1);font-weight:500}
+.entry-val{font-size:13px;color:var(--t2);text-align:right}
+.entry-total{font-size:13px;font-weight:600;color:var(--t1);text-align:right}
+.entry-actions{display:flex;justify-content:flex-end;gap:4px}
+
+/* card footer */
+.card-footer{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--t1)}
+.card-footer-label{font-size:12px;color:rgba(255,255,255,.45);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.card-footer-hours{font-size:13px;color:rgba(255,255,255,.6);margin-left:12px}
+.card-footer-amount{font-size:18px;font-weight:700;color:#fff}
+.card-actions{display:flex;gap:8px;padding:12px 16px;background:#fff;border-top:1px solid var(--border)}
+
+/* icon btn */
+.icon-btn{width:28px;height:28px;border-radius:7px;border:none;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-btn.normal{background:var(--bg);color:var(--t2)}
+.icon-btn.danger{background:var(--red-bg);color:var(--red)}
+
+/* modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+@media(min-width:640px){.modal-backdrop{align-items:center;padding:16px}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-sheet{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:28px 20px 32px;max-height:90dvh;overflow-y:auto;animation:slideUp .3s cubic-bezier(.34,1.56,.64,1)}
+@media(min-width:640px){.modal-sheet{max-width:420px;border-radius:20px;animation:popIn .25s cubic-bezier(.34,1.4,.64,1)}}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes popIn{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-size:17px;font-weight:700;color:var(--t1)}
+.modal-close{width:32px;height:32px;border-radius:8px;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:18px}
+.modal-form{display:flex;flex-direction:column;gap:14px}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--t1);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;font-weight:500;z-index:100;animation:fadeIn .2s ease;white-space:nowrap}
+
+/* spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{animation:spin .8s linear infinite}
+
+/* empty */
+.empty{text-align:center;padding:48px 0;color:var(--t3)}
+</style>
+</head>
+<body>
+
+<!-- ═══ CONFIG — edita estos valores ═══════════════════════════════════════ -->
+<script>
+const CONFIG = {
+  JSONBIN_API_KEY: "$2a$10$cKDlVu6UQWUkWnGYnGiVIud5/YBixYcSsOY9ZxKN3BmE3TJjY31ZO",   // tu X-Master-Key de JSONBin
+  JSONBIN_BIN_ID:  "69b9a97fc3097a1dd533e970",    // el ID del bin que creaste
+
+  ADMIN_USER: "capataz",
+  ADMIN_PASS: "Cuadrilla#2026!",
+
+  VIEWER_USER: "trabajador",
+  VIEWER_PASS: "Equipo#2026!",
+}
+</script>
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+
+<script>
+// ─── data inicial ────────────────────────────────────────────────────────────
+const INITIAL_DATA = {
+  workers: [
+    {id:"w1",  name:"Diego Valencia",     rate:11},
+    {id:"w2",  name:"Alonso Prado",       rate:11},
+    {id:"w3",  name:"Francisco García",   rate:11},
+    {id:"w4",  name:"Antonio Espada",     rate:11},
+    {id:"w5",  name:"Benito Gutiérrez",   rate:11},
+    {id:"w6",  name:"Manolo Lozano",      rate:11},
+    {id:"w7",  name:"Cristo",             rate:11},
+    {id:"w8",  name:"Juan Macías",        rate:11},
+    {id:"w9",  name:"Francisco González", rate:11},
+    {id:"w10", name:"Sarai",              rate:11},
+    {id:"w11", name:"Rochi",              rate:11},
+  ],
+  entries: [
+    {id:"e1",  workerId:"w1",  date:"2026-03-09", hours:6},
+    {id:"e2",  workerId:"w1",  date:"2026-03-11", hours:6.5},
+    {id:"e3",  workerId:"w1",  date:"2026-03-12", hours:7},
+    {id:"e4",  workerId:"w1",  date:"2026-03-13", hours:7.25},
+    {id:"e5",  workerId:"w1",  date:"2026-03-14", hours:8},
+    {id:"e6",  workerId:"w1",  date:"2026-03-15", hours:7.25},
+    {id:"e7",  workerId:"w2",  date:"2026-03-09", hours:6},
+    {id:"e8",  workerId:"w2",  date:"2026-03-11", hours:6.5},
+    {id:"e9",  workerId:"w2",  date:"2026-03-12", hours:7},
+    {id:"e10", workerId:"w2",  date:"2026-03-13", hours:7.25},
+    {id:"e11", workerId:"w2",  date:"2026-03-14", hours:8},
+    {id:"e12", workerId:"w2",  date:"2026-03-15", hours:7.25},
+    {id:"e13", workerId:"w3",  date:"2026-03-09", hours:6},
+    {id:"e14", workerId:"w3",  date:"2026-03-11", hours:6.5},
+    {id:"e15", workerId:"w3",  date:"2026-03-12", hours:7},
+    {id:"e16", workerId:"w3",  date:"2026-03-13", hours:7.25},
+    {id:"e17", workerId:"w3",  date:"2026-03-14", hours:8},
+    {id:"e18", workerId:"w3",  date:"2026-03-15", hours:7.25},
+    {id:"e19", workerId:"w4",  date:"2026-03-09", hours:6},
+    {id:"e20", workerId:"w4",  date:"2026-03-11", hours:6.5},
+    {id:"e21", workerId:"w4",  date:"2026-03-12", hours:7},
+    {id:"e22", workerId:"w4",  date:"2026-03-13", hours:7.25},
+    {id:"e23", workerId:"w4",  date:"2026-03-14", hours:8},
+    {id:"e24", workerId:"w4",  date:"2026-03-15", hours:7.25},
+    {id:"e25", workerId:"w5",  date:"2026-03-09", hours:6},
+    {id:"e26", workerId:"w5",  date:"2026-03-11", hours:6.5},
+    {id:"e27", workerId:"w5",  date:"2026-03-12", hours:7},
+    {id:"e28", workerId:"w5",  date:"2026-03-13", hours:7.25},
+    {id:"e29", workerId:"w5",  date:"2026-03-14", hours:8},
+    {id:"e30", workerId:"w5",  date:"2026-03-15", hours:7.25},
+    {id:"e31", workerId:"w6",  date:"2026-03-13", hours:7.25},
+    {id:"e32", workerId:"w6",  date:"2026-03-14", hours:8},
+    {id:"e33", workerId:"w6",  date:"2026-03-15", hours:7.25},
+    {id:"e34", workerId:"w7",  date:"2026-03-13", hours:7.25},
+    {id:"e35", workerId:"w7",  date:"2026-03-14", hours:8},
+    {id:"e36", workerId:"w7",  date:"2026-03-15", hours:7.25},
+    {id:"e37", workerId:"w8",  date:"2026-03-14", hours:8},
+    {id:"e38", workerId:"w8",  date:"2026-03-15", hours:7.25},
+    {id:"e39", workerId:"w9",  date:"2026-03-14", hours:8},
+    {id:"e40", workerId:"w10", date:"2026-03-14", hours:8},
+    {id:"e41", workerId:"w11", date:"2026-03-15", hours:7.25},
+  ]
+}
+
+// ─── helpers ─────────────────────────────────────────────────────────────────
+function uid(){ return Math.random().toString(36).slice(2)+Date.now().toString(36) }
+
+function fmtDate(iso){
+  const d=new Date(iso+'T00:00:00Z')
+  const days=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']
+  const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']
+  return `${days[d.getUTCDay()]} ${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`
+}
+function fmtH(h){
+  const hh=Math.floor(h), mm=Math.round((h-hh)*60)
+  return mm===0?`${hh}h`:`${hh}h ${mm}min`
+}
+function fmtE(n){
+  return new Intl.NumberFormat('es-ES',{style:'currency',currency:'EUR'}).format(n)
+}
+function hInput(val){
+  const s=val.trim().replace(',','.')
+  if(!s) return null
+  const p=s.split('.')
+  if(p.length===2){const h=parseInt(p[0]),m=parseInt(p[1]);if(p[1].length===2&&m<60) return h+m/60}
+  const n=parseFloat(s); return isNaN(n)?null:n
+}
+function hDisplay(h){
+  const hh=Math.floor(h),mm=Math.round((h-hh)*60)
+  return mm===0?`${hh}`:`${hh}.${mm.toString().padStart(2,'0')}`
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+
+// ─── state ───────────────────────────────────────────────────────────────────
+let state = {
+  role: null,      // null | 'admin' | 'viewer'
+  data: null,      // AppData
+  openCard: null,  // workerId
+  saving: false,
+}
+
+// ─── JSONBin API ─────────────────────────────────────────────────────────────
+async function loadData(){
+  try{
+    const r=await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}/latest`,{
+      headers:{'X-Master-Key':CONFIG.JSONBIN_API_KEY}
+    })
+    if(!r.ok) return INITIAL_DATA
+    const j=await r.json()
+    return j.record || INITIAL_DATA
+  }catch{ return INITIAL_DATA }
+}
+
+async function saveData(data){
+  try{
+    const r=await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.JSONBIN_BIN_ID}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':CONFIG.JSONBIN_API_KEY},
+      body:JSON.stringify(data)
+    })
+    return r.ok
+  }catch{ return false }
+}
+
+// ─── auth ─────────────────────────────────────────────────────────────────────
+function checkLogin(user,pass){
+  if(user===CONFIG.ADMIN_USER && pass===CONFIG.ADMIN_PASS) return 'admin'
+  if(user===CONFIG.VIEWER_USER && pass===CONFIG.VIEWER_PASS) return 'viewer'
+  return null
+}
+function saveSession(role){ sessionStorage.setItem('jl_role',role) }
+function loadSession(){ return sessionStorage.getItem('jl_role') }
+function clearSession(){ sessionStorage.removeItem('jl_role') }
+
+// ─── toast ────────────────────────────────────────────────────────────────────
+let toastTimer=null
+function showToast(msg){
+  let t=document.getElementById('toast')
+  if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t)}
+  t.textContent=msg;t.style.display='block'
+  clearTimeout(toastTimer)
+  toastTimer=setTimeout(()=>{t.style.display='none'},2500)
+}
+
+// ─── derived ─────────────────────────────────────────────────────────────────
+function workerEntries(wid){
+  return (state.data.entries||[]).filter(e=>e.workerId===wid).sort((a,b)=>b.date.localeCompare(a.date))
+}
+function workerTotalH(wid){ return workerEntries(wid).reduce((s,e)=>s+e.hours,0) }
+function workerTotalPay(wid){
+  const w=state.data.workers.find(x=>x.id===wid)
+  return w?workerTotalH(wid)*w.rate:0
+}
+function grandTotal(){ return state.data.workers.reduce((s,w)=>s+workerTotalPay(w.id),0) }
+
+// ─── render ───────────────────────────────────────────────────────────────────
+function render(){
+  if(!state.role){ renderLogin(); return }
+  renderDashboard()
+}
+
+function renderLogin(){
+  document.body.innerHTML=`
+  <div class="login-wrap">
+    <div class="login-box">
+      <div style="text-align:center;margin-bottom:36px">
+        <div class="login-logo">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="4" width="18" height="16" rx="2" stroke="white" stroke-width="1.8"/>
+            <path d="M3 9h18" stroke="white" stroke-width="1.8"/>
+            <path d="M8 2v4M16 2v4" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M7 13h4M7 16h6" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1 style="font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-.03em">Jornada Laboral</h1>
+        <p style="font-size:14px;color:var(--t3);margin-top:6px">Control de horas y pagos</p>
+      </div>
+      <div class="login-card">
+        <div class="login-title">Iniciar sesión</div>
+        <div class="modal-form">
+          <div class="field">
+            <label class="label">Usuario</label>
+            <input class="input" id="l-user" type="text" autocomplete="username" placeholder="Tu usuario">
+          </div>
+          <div class="field">
+            <label class="label">Contraseña</label>
+            <div class="input-wrap">
+              <input class="input" id="l-pass" type="password" autocomplete="current-password" placeholder="Tu contraseña">
+              <button class="eye-btn" onclick="togglePass()" id="eye-btn">
+                ${svgEye()}
+              </button>
+            </div>
+          </div>
+          <div id="l-err" style="display:none" class="error-msg"></div>
+          <button class="btn btn-primary btn-full" onclick="doLogin()" id="l-btn">Entrar</button>
+        </div>
+      </div>
+    </div>
+  </div>`
+  document.getElementById('l-user').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin() })
+  document.getElementById('l-pass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin() })
+}
+
+function togglePass(){
+  const inp=document.getElementById('l-pass')
+  const btn=document.getElementById('eye-btn')
+  if(inp.type==='password'){inp.type='text';btn.innerHTML=svgEyeOff()}
+  else{inp.type='password';btn.innerHTML=svgEye()}
+}
+
+async function doLogin(){
+  const user=document.getElementById('l-user').value.trim()
+  const pass=document.getElementById('l-pass').value
+  const err=document.getElementById('l-err')
+  const btn=document.getElementById('l-btn')
+  if(!user||!pass){showErr(err,'Completa todos los campos');return}
+  btn.innerHTML=spinner();btn.disabled=true
+  const role=checkLogin(user,pass)
+  if(!role){
+    btn.textContent='Entrar';btn.disabled=false
+    showErr(err,'Usuario o contraseña incorrectos')
+    return
+  }
+  state.role=role
+  saveSession(role)
+  state.data=await loadData()
+  renderDashboard()
+}
+
+function showErr(el,msg){el.textContent=msg;el.style.display='block'}
+
+function renderDashboard(){
+  const isAdmin=state.role==='admin'
+  const d=state.data
+  const total=grandTotal()
+
+  let cardsHtml=''
+  if(d.workers.length===0){
+    cardsHtml=`<div class="empty">No hay trabajadores registrados</div>`
+  } else {
+    d.workers.forEach(w=>{
+      const entries=workerEntries(w.id)
+      const totalH=workerTotalH(w.id)
+      const totalPay=workerTotalPay(w.id)
+      const isOpen=state.openCard===w.id
+      const cols=isAdmin?'1fr 72px 84px 60px':'1fr 72px 84px'
+
+      let rowsHtml=''
+      if(entries.length===0){
+        rowsHtml=`<div style="padding:20px 16px;text-align:center;color:var(--t3);font-size:14px">Sin registros de horas</div>`
+      } else {
+        const hdrCols=isAdmin?['Fecha','Horas','Total','']:['Fecha','Horas','Total']
+        rowsHtml=`
+          <div class="col-headers" style="grid-template-columns:${cols}">
+            ${hdrCols.map((h,i)=>`<div class="col-h" style="text-align:${i>0?'right':'left'}">${h}</div>`).join('')}
+          </div>
+          ${entries.map((e,idx)=>`
+            <div class="entry-row" style="grid-template-columns:${cols};background:${idx%2===0?'#fff':'var(--bg)'}">
+              <div class="entry-date">${fmtDate(e.date)}</div>
+              <div class="entry-val">${fmtH(e.hours)}</div>
+              <div class="entry-total">${fmtE(e.hours*w.rate)}</div>
+              ${isAdmin?`<div class="entry-actions">
+                <button class="icon-btn normal" title="Editar" onclick="openEditEntry('${esc(e.id)}')">
+                  ${svgPencil()}
+                </button>
+                <button class="icon-btn danger" title="Eliminar" onclick="confirmDeleteEntry('${esc(e.id)}','${esc(fmtDate(e.date))}')">
+                  ${svgTrash()}
+                </button>
+              </div>`:''}
+            </div>`).join('')}
+        `
+      }
+
+      const adminActions=isAdmin?`
+        <div class="card-actions">
+          <button class="btn btn-ghost" style="flex:1;font-size:13px;padding:9px 12px" onclick="openAddEntry('${esc(w.id)}')">+ Añadir día</button>
+          <button class="btn btn-ghost" style="font-size:13px;padding:9px 14px" onclick="openEditWorker('${esc(w.id)}')">Editar</button>
+          <button class="btn btn-danger" style="font-size:13px;padding:9px 14px" onclick="confirmDeleteWorker('${esc(w.id)}','${esc(w.name)}')">Borrar</button>
+        </div>`
+        :''
+
+      cardsHtml+=`
+        <div class="card${isOpen?' open':''}" id="card-${esc(w.id)}">
+          <button class="card-header" onclick="toggleCard('${esc(w.id)}')">
+            <div class="avatar">${esc(w.name[0])}</div>
+            <div style="flex:1;min-width:0">
+              <div class="card-name">${esc(w.name)}</div>
+              <div class="card-sub">${w.rate}€/h · ${entries.length} ${entries.length===1?'día':'días'}</div>
+            </div>
+            <div class="card-right">
+              <div class="card-amount">${fmtE(totalPay)}</div>
+              <div class="card-hours">${fmtH(totalH)}</div>
+            </div>
+            <svg class="chevron${isOpen?' open':''}" id="chev-${esc(w.id)}" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="accordion-body${isOpen?' open':''}" id="acc-${esc(w.id)}">
+            <div class="accordion-inner">
+              ${rowsHtml}
+              <div class="card-footer">
+                <div style="display:flex;align-items:center">
+                  <span class="card-footer-label">Total</span>
+                  <span class="card-footer-hours">${fmtH(totalH)}</span>
+                </div>
+                <span class="card-footer-amount">${fmtE(totalPay)}</span>
+              </div>
+              ${adminActions}
+            </div>
+          </div>
+        </div>`
+    })
+  }
+
+  const addBtn=isAdmin?`
+    <button class="btn btn-primary" style="width:100%;margin-top:8px;padding:14px;font-size:15px;border-radius:16px" onclick="openAddWorker()">
+      + Añadir trabajador
+    </button>`:''
+
+  document.body.innerHTML=`
+  <div class="page">
+    <header>
+      <div>
+        <div class="header-title">Jornada Laboral</div>
+        <div class="header-sub">${isAdmin?'Administrador':'Trabajador'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="saving-spinner" style="display:none">${spinner(true,true)}</span>
+        <button class="btn" style="background:rgba(255,255,255,.12);color:#fff;padding:7px 14px;font-size:13px" onclick="doLogout()">Salir</button>
+      </div>
+    </header>
+    <div class="summary-bar">
+      <div class="summary-inner">
+        <div>
+          <div class="summary-label">Total acumulado</div>
+          <div class="summary-amount">${fmtE(total)}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="summary-label">${d.workers.length} trabajadores</div>
+          <div style="font-size:13px;color:var(--t2);margin-top:2px">${d.entries.length} registros</div>
+        </div>
+      </div>
+    </div>
+    <main>${cardsHtml}${addBtn}</main>
+  </div>`
+}
+
+// ─── card toggle ─────────────────────────────────────────────────────────────
+function toggleCard(wid){
+  state.openCard=(state.openCard===wid?null:wid)
+  const acc=document.getElementById('acc-'+wid)
+  const chev=document.getElementById('chev-'+wid)
+  const card=document.getElementById('card-'+wid)
+  const open=state.openCard===wid
+  acc.classList.toggle('open',open)
+  chev.classList.toggle('open',open)
+  card.classList.toggle('open',open)
+}
+
+// ─── logout ──────────────────────────────────────────────────────────────────
+function doLogout(){ state.role=null; state.data=null; clearSession(); render() }
+
+// ─── save helper ─────────────────────────────────────────────────────────────
+async function persistData(){
+  const sp=document.getElementById('saving-spinner')
+  if(sp) sp.style.display='inline-flex'
+  const ok=await saveData(state.data)
+  if(sp) sp.style.display='none'
+  showToast(ok?'Guardado':'Error al guardar')
+  renderDashboard()
+}
+
+// ─── modal helpers ───────────────────────────────────────────────────────────
+function showModal(html){
+  const bd=document.createElement('div')
+  bd.className='modal-backdrop'
+  bd.id='modal-bd'
+  bd.innerHTML=`<div class="modal-sheet">${html}</div>`
+  bd.addEventListener('click',e=>{ if(e.target===bd) closeModal() })
+  document.body.appendChild(bd)
+}
+function closeModal(){ const m=document.getElementById('modal-bd'); if(m) m.remove() }
+
+function modalHeader(title){
+  return `<div class="modal-header">
+    <span class="modal-title">${esc(title)}</span>
+    <button class="modal-close" onclick="closeModal()">✕</button>
+  </div>`
+}
+
+// ─── add entry ────────────────────────────────────────────────────────────────
+function openAddEntry(wid){
+  const w=state.data.workers.find(x=>x.id===wid)
+  const today=new Date().toISOString().split('T')[0]
+  showModal(`
+    ${modalHeader('Añadir día — '+w.name)}
+    <div class="modal-form">
+      <div class="field"><label class="label">Fecha</label>
+        <input class="input" id="ae-date" type="date" value="${today}">
+      </div>
+      <div class="field"><label class="label">Horas trabajadas</label>
+        <input class="input" id="ae-hours" type="text" inputmode="decimal" placeholder="Ej: 8 · 7.30 · 6.15" oninput="updatePreview('ae-hours','ae-preview',${w.rate})">
+        <div class="hint">H.MM — 7.30 significa 7h 30min</div>
+      </div>
+      <div id="ae-preview" style="display:none" class="preview-msg"></div>
+      <div id="ae-err" style="display:none" class="error-msg"></div>
+      <button class="btn btn-primary btn-full" onclick="doAddEntry('${esc(wid)}')">Guardar</button>
+    </div>`)
+  document.getElementById('ae-hours').addEventListener('keydown',e=>{ if(e.key==='Enter') doAddEntry(wid) })
+}
+
+function updatePreview(inputId,previewId,rate){
+  const h=hInput(document.getElementById(inputId).value)
+  const el=document.getElementById(previewId)
+  if(h&&h>0){el.textContent=`${fmtH(h)} → ${fmtE(h*rate)}`;el.style.display='block'}
+  else el.style.display='none'
+}
+
+function doAddEntry(wid){
+  const date=document.getElementById('ae-date').value
+  const hoursStr=document.getElementById('ae-hours').value
+  const err=document.getElementById('ae-err')
+  if(!date){showErr(err,'Elige una fecha');return}
+  const h=hInput(hoursStr)
+  if(!h||h<=0){showErr(err,'Introduce horas válidas (ej: 7.30 = 7h 30min)');return}
+  if(state.data.entries.find(e=>e.workerId===wid&&e.date===date)){showErr(err,'Ya existe un registro para esa fecha');return}
+  state.data.entries.push({id:uid(),workerId:wid,date,hours:h})
+  closeModal()
+  persistData()
+}
+
+// ─── edit entry ───────────────────────────────────────────────────────────────
+function openEditEntry(eid){
+  const e=state.data.entries.find(x=>x.id===eid)
+  const w=state.data.workers.find(x=>x.id===e.workerId)
+  showModal(`
+    ${modalHeader('Editar registro — '+w.name)}
+    <div class="modal-form">
+      <div class="field"><label class="label">Fecha</label>
+        <input class="input" id="ee-date" type="date" value="${e.date}">
+      </div>
+      <div class="field"><label class="label">Horas trabajadas</label>
+        <input class="input" id="ee-hours" type="text" inputmode="decimal" value="${hDisplay(e.hours)}" oninput="updatePreview('ee-hours','ee-preview',${w.rate})">
+        <div class="hint">H.MM — 7.30 significa 7h 30min</div>
+      </div>
+      <div id="ee-preview" style="display:none" class="preview-msg"></div>
+      <div id="ee-err" style="display:none" class="error-msg"></div>
+      <button class="btn btn-primary btn-full" onclick="doEditEntry('${esc(eid)}')">Guardar cambios</button>
+    </div>`)
+  updatePreview('ee-hours','ee-preview',w.rate)
+  document.getElementById('ee-hours').addEventListener('keydown',ev=>{ if(ev.key==='Enter') doEditEntry(eid) })
+}
+
+function doEditEntry(eid){
+  const date=document.getElementById('ee-date').value
+  const h=hInput(document.getElementById('ee-hours').value)
+  const err=document.getElementById('ee-err')
+  if(!h||h<=0){showErr(err,'Introduce horas válidas');return}
+  state.data.entries=state.data.entries.map(e=>e.id===eid?{...e,date,hours:h}:e)
+  closeModal()
+  persistData()
+}
+
+// ─── delete entry ─────────────────────────────────────────────────────────────
+function confirmDeleteEntry(eid,dateLabel){
+  showModal(`
+    ${modalHeader('Confirmar eliminación')}
+    <p style="color:var(--t2);font-size:15px;margin-top:4px;line-height:1.5">
+      ¿Seguro que quieres eliminar el registro del <strong>${esc(dateLabel)}</strong>? Esta acción no se puede deshacer.
+    </p>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-ghost" style="flex:1;padding:14px" onclick="closeModal()">Cancelar</button>
+      <button class="btn" style="flex:1;padding:14px;background:var(--red);color:#fff" onclick="doDeleteEntry('${esc(eid)}')">Eliminar</button>
+    </div>`)
+}
+
+function doDeleteEntry(eid){
+  state.data.entries=state.data.entries.filter(e=>e.id!==eid)
+  closeModal()
+  persistData()
+}
+
+// ─── add worker ───────────────────────────────────────────────────────────────
+function openAddWorker(){
+  showModal(`
+    ${modalHeader('Nuevo trabajador')}
+    <div class="modal-form">
+      <div class="field"><label class="label">Nombre completo</label>
+        <input class="input" id="aw-name" type="text" placeholder="Nombre Apellido">
+      </div>
+      <div class="field"><label class="label">Tarifa por hora (€)</label>
+        <input class="input" id="aw-rate" type="number" inputmode="decimal" min="0" step="0.5" value="11">
+      </div>
+      <div id="aw-err" style="display:none" class="error-msg"></div>
+      <button class="btn btn-primary btn-full" onclick="doAddWorker()">Añadir trabajador</button>
+    </div>`)
+}
+
+function doAddWorker(){
+  const name=document.getElementById('aw-name').value.trim()
+  const rate=parseFloat(document.getElementById('aw-rate').value)
+  const err=document.getElementById('aw-err')
+  if(!name){showErr(err,'Introduce el nombre');return}
+  if(isNaN(rate)||rate<=0){showErr(err,'Tarifa inválida');return}
+  state.data.workers.push({id:uid(),name,rate})
+  closeModal()
+  persistData()
+}
+
+// ─── edit worker ─────────────────────────────────────────────────────────────
+function openEditWorker(wid){
+  const w=state.data.workers.find(x=>x.id===wid)
+  showModal(`
+    ${modalHeader('Editar trabajador')}
+    <div class="modal-form">
+      <div class="field"><label class="label">Nombre completo</label>
+        <input class="input" id="ew-name" type="text" value="${esc(w.name)}">
+      </div>
+      <div class="field"><label class="label">Tarifa por hora (€)</label>
+        <input class="input" id="ew-rate" type="number" inputmode="decimal" min="0" step="0.5" value="${w.rate}">
+      </div>
+      <div id="ew-err" style="display:none" class="error-msg"></div>
+      <button class="btn btn-primary btn-full" onclick="doEditWorker('${esc(wid)}')">Guardar cambios</button>
+    </div>`)
+}
+
+function doEditWorker(wid){
+  const name=document.getElementById('ew-name').value.trim()
+  const rate=parseFloat(document.getElementById('ew-rate').value)
+  const err=document.getElementById('ew-err')
+  if(!name){showErr(err,'Introduce el nombre');return}
+  if(isNaN(rate)||rate<=0){showErr(err,'Tarifa inválida');return}
+  state.data.workers=state.data.workers.map(w=>w.id===wid?{...w,name,rate}:w)
+  closeModal()
+  persistData()
+}
+
+// ─── delete worker ────────────────────────────────────────────────────────────
+function confirmDeleteWorker(wid,name){
+  showModal(`
+    ${modalHeader('Confirmar eliminación')}
+    <p style="color:var(--t2);font-size:15px;margin-top:4px;line-height:1.5">
+      ¿Seguro que quieres eliminar a <strong>${esc(name)}</strong> y todos sus registros? Esta acción no se puede deshacer.
+    </p>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-ghost" style="flex:1;padding:14px" onclick="closeModal()">Cancelar</button>
+      <button class="btn" style="flex:1;padding:14px;background:var(--red);color:#fff" onclick="doDeleteWorker('${esc(wid)}')">Eliminar</button>
+    </div>`)
+}
+
+function doDeleteWorker(wid){
+  state.data.workers=state.data.workers.filter(w=>w.id!==wid)
+  state.data.entries=state.data.entries.filter(e=>e.workerId!==wid)
+  if(state.openCard===wid) state.openCard=null
+  closeModal()
+  persistData()
+}
+
+// ─── icons ────────────────────────────────────────────────────────────────────
+function svgEye(){return`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>`}
+function svgEyeOff(){return`<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M1 1l22 22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`}
+function svgPencil(){return`<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M11.5 2.5l2 2-9 9H2.5v-2l9-9z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+function svgTrash(){return`<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 4h12M5 4V2h6v2M6 7v5M10 7v5M3 4l1 10h8l1-10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+function spinner(small,light){
+  const sz=small?16:32
+  return`<svg class="spinner" width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="${light?'rgba(255,255,255,.25)':'var(--border)'}" stroke-width="2.5"/><path d="M12 2a10 10 0 0 1 10 10" stroke="${light?'white':'var(--t1)'}" stroke-width="2.5" stroke-linecap="round"/></svg>`
+}
+
+// ─── init ─────────────────────────────────────────────────────────────────────
+async function init(){
+  const savedRole=loadSession()
+  if(savedRole){
+    state.role=savedRole
+    state.data=await loadData()
+  }
+  render()
+}
+
+init()
+</script>
+</body>
+</html>
